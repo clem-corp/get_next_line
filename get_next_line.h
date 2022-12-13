@@ -6,7 +6,7 @@
 /*   By: clacaill <clacaill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/13 16:15:09 by clacaill          #+#    #+#             */
-/*   Updated: 2022/12/13 16:36:13 by clacaill         ###   ########.fr       */
+/*   Updated: 2022/12/13 17:55:43 by clacaill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,5 @@
 # include <fcntl.h>
 
 char	*get_next_line(int fd);
-char	*ft_strjoin(char *s1, char *s2);
-int		ft_strlen(char *str);
-char	*ft_strchr(char *s, int c);
 
 #endif
