@@ -1,43 +1,89 @@
-#include <fcntl.h>
-#include <stdio.h>
-#include <unistd.h>
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: clacaill <clacaill@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/12/13 16:15:30 by clacaill          #+#    #+#             */
+/*   Updated: 2022/12/13 16:36:04 by clacaill         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-int	main(void)
+#include "get_next_line.h"
+
+char	*ft_get_line(char *line)
 {
-	char	buf[100];	// stocke les caractères lus par read
-	int	fd;		// descripteur de fichier à lire
-	int	nb_read;	// stocke le retour de read
-	int	count;		// compte du nombre de lectures avec read
+	int	i;
 
-//	Ouvre le fichier cat.txt en mode lecture seule
-	fd = open("cat.txt", O_RDONLY);
-	if (fd == -1)
-		return (1);
-//	Initialise les variables de compte
-	nb_read = -1;
-	count = 0;
-//	Boucle tant que read ne retourne pas 0 (ce qui veut dire
-//	qu'il n'y a plus rien à lire dans le fichier)
-	while (nb_read != 0)
+	i = 0;
+	while (line[i] && line[i] != '\n')
+		i++;
+	i++;
+	line[i] = '\0';
+	return (line);
+}
+
+char	*ft_get_endline(char *line, char *buff)
+{
+	int	i;
+	int	j;
+
+	i = 0;
+	j = 0;
+	while (line[i] && line[i] != '\n')
+		i++;
+	if (line[i] == '\n')
 	{
-		// Lecture de 100 caractères avec read depuis le
-		// descripteur de fichier ouvert
-		nb_read = read(fd, buf, 100);
-		// En cas d'erreur, read renvoie -1, on arrête tout
-		if (nb_read == -1)
+		i++;
+		while (line[i])
 		{
-			printf("Erreur de lecture !\n");
-			return (1);
+			buff[j] = line[i];
+			i++;
+			j++;
 		}
-		// Read n'ajoute pas le \0 à la fin de la chaîne
-		// de caractères lus. On peut se servir du nombre
-		// de caractères lus comme index du dernier caractère
-		buf[nb_read] = '\0';
-		// Imprime ce que contient le buffer après la lecture
-		printf("\e[36m%d : [\e[0m%s\e[36m]\e[0m\n", count, buf);
-		count++;
 	}
-//	Ferme le descripteur de fichier ouvert plus tôt
-	close(fd);
-	return (0);
+	buff[j] = '\0';
+	return (buff);
+}
+
+char	*ft_read_line(int fd, char *line, char *buff)
+{
+	int	return_value;
+
+	return_value = 1;
+	line = ft_strjoin(line, buff);
+	while (!ft_strchr(line, '\n') && return_value != 0)
+	{
+		return_value = read(fd, buff, BUFFER_SIZE);
+		if (return_value == -1)
+			return (NULL);
+		buff[return_value] = '\0';
+		line = ft_strjoin(line, buff);
+	}
+	if (ft_strchr(line, '\n'))
+	{
+		buff = ft_get_endline(line, buff);
+		line = ft_get_line(line);
+	}
+	if (line == NULL)
+		return (NULL);
+	return (line);
+}
+
+char	*get_next_line(int fd)
+{
+	static char	buff[BUFFER_SIZE + 1];
+	char		*line;
+
+	line = NULL;
+	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, buff, 0) == -1)
+		return (NULL);
+	line = ft_read_line(fd, line, buff);
+	if (line[0] == '\0')
+	{
+		free(line);
+		return (NULL);
+	}
+	return (line);
 }
