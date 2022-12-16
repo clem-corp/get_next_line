@@ -6,11 +6,25 @@
 /*   By: clacaill <clacaill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/13 16:15:30 by clacaill          #+#    #+#             */
-/*   Updated: 2022/12/16 20:27:05 by clacaill         ###   ########.fr       */
+/*   Updated: 2022/12/16 21:32:06 by clacaill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+
+void	ft_back_n(char *line, char *buff);
+
+char	*return_function(char *line, char *buff)
+{
+	if (ft_strchr(line, '\n'))
+		ft_back_n(line, buff);
+	if (line[0] == '\0')
+	{
+		free(line);
+		return (NULL);
+	}
+	return (line);
+}
 
 char	*get_next_line(int fd)
 {
@@ -21,9 +35,9 @@ char	*get_next_line(int fd)
 
 	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, buff, 0) == -1)
 		return (NULL);
-	nb_read = -1;
 	line = "";
 	line = ft_strjoin(line, buff);
+	nb_read = -1;
 	while (!ft_strchr(line, '\n') && nb_read != 0)
 	{
 		nb_read = read(fd, buff, BUFFER_SIZE);
@@ -34,42 +48,24 @@ char	*get_next_line(int fd)
 		line = ft_strjoin(tmp, buff);
 		free(tmp);
 	}
-	if (ft_strchr(line, '\n'))
-	{
-		int i = 0;
-		int j = 0;
-		while (line[i] && line[i] != '\n')
-			i++;
-		while (line[j + i] && line[j + i + 1])
-		{
-			buff[j] = line[j + i + 1];
-			j++;
-		}
-		buff[j] = '\0';
-		if (line[i])
-			line[i + 1] = '\0';
-	}
-	if (line[0] == '\0')
-	{
-		free(line);
-		return (NULL);
-	}
-	return (line);
+	return (return_function(line, buff));
 }
 
-/* int main()
+void	ft_back_n(char *line, char *buff)
 {
-	int fd;
-	int i;
-	fd = open("cat.txt", O_RDONLY);
-	char *gnl;
-	i = 17;
-	while(i-- > 0)
+	int		i;
+	int		j;
+
+	i = 0;
+	j = 0;
+	while (line[i] && line[i] != '\n')
+		i++;
+	while (line[j + i] && line[j + i + 1])
 	{
-		gnl = get_next_line(fd);
-		printf("%s", gnl);
-		free(gnl);
+		buff[j] = line[j + i + 1];
+		j++;
 	}
-	close(fd);
-	return (0);
-} */
+	buff[j] = '\0';
+	if (line[i])
+		line[i + 1] = '\0';
+}
