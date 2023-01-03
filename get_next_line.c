@@ -6,7 +6,7 @@
 /*   By: clacaill <clacaill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/13 16:15:30 by clacaill          #+#    #+#             */
-/*   Updated: 2022/12/16 21:32:06 by clacaill         ###   ########.fr       */
+/*   Updated: 2023/01/03 19:05:44 by clacaill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,8 @@ char	*get_next_line(int fd)
 		return (NULL);
 	line = "";
 	line = ft_strjoin(line, buff);
+	if (!line)
+		return (NULL);
 	nb_read = -1;
 	while (!ft_strchr(line, '\n') && nb_read != 0)
 	{
@@ -47,6 +49,8 @@ char	*get_next_line(int fd)
 		tmp = line;
 		line = ft_strjoin(tmp, buff);
 		free(tmp);
+		if (!line)
+			return (NULL);
 	}
 	return (return_function(line, buff));
 }
